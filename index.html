@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerador de QR Code para PDF</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    #qrcode {
+      margin-top: 20px;
+    }
+    input[type=file], button {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Gerador de QR Code para PDF</h1>
+  <input type="file" id="fileInput" accept="application/pdf">
+  <button onclick="uploadAndGenerateQR()">Enviar e Gerar QR Code</button>
+  <div id="qrcode"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script>
+    async function uploadAndGenerateQR() {
+      const fileInput = document.getElementById('fileInput');
+      const file = fileInput.files[0];
+
+      if (!file) {
+        alert('Por favor, selecione um arquivo PDF.');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('https://api.anonymousfiles.io/', {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await response.json();
+      const fileUrl = data.url;
+
+      document.getElementById('qrcode').innerHTML = '';
+      new QRCode(document.getElementById('qrcode'), fileUrl);
+    }
+  </script>
+</body>
+</html>
