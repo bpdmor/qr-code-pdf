@@ -40,16 +40,27 @@
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch('https://api.anonymousfiles.io/', {
-        method: 'POST',
-        body: formData
-      });
+      try {
+        const response = await fetch('https://api.anonfiles.com/upload', {
+          method: 'POST',
+          body: formData
+        });
 
-      const data = await response.json();
-      const fileUrl = data.url;
+        const result = await response.json();
 
-      document.getElementById('qrcode').innerHTML = '';
-      new QRCode(document.getElementById('qrcode'), fileUrl);
+        if (!result.status) {
+          alert('Erro ao fazer upload do arquivo.');
+          return;
+        }
+
+        const fileUrl = result.data.file.url.full;
+
+        document.getElementById('qrcode').innerHTML = '';
+        new QRCode(document.getElementById('qrcode'), fileUrl);
+      } catch (error) {
+        console.error(error);
+        alert('Erro na conexão com o servidor de upload.');
+      }
     }
   </script>
 </body>
